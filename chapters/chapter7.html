@@ -235,6 +235,13 @@
       </header>
 
       <main class="main-content">
+        <!-- 章節封面（占位） -->
+        <section class="content-section">
+          <div class="section-header"><div class="section-number">🖼️</div><h2 class="section-title">章節封面（占位）</h2></div>
+          <p class="content-text">請將你的封面圖放到 <code>images/</code>，檔名例如 <code>ch7-cover.png</code>，並更新 <code>src</code>。</p>
+          <div class="memory-diagram"><img src="images/ch7-cover.png" alt="Chapter 7 Cover" style="max-width:100%;height:auto;opacity:.6"/></div>
+        </section>
+
         <!-- 1. 錯誤寫法 - sizeof 陷阱 -->
         <section class="content-section" id="wrong-way">
           <div class="section-header"><div class="section-number">❌</div><h2 class="section-title">錯誤寫法 - sizeof 陷阱</h2></div>
@@ -255,388 +262,7 @@
 <span class="keyword">#include</span> &lt;stdio.h&gt;
 
 <span class="comment">// 函式：計算陣列元素總和</span>
-<span class="type">int</span> <span class="function">main</span>() {
-    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
-    
-    <span class="comment">// 在 main() 中，A 是陣列，因此 sizeof(A) 會計算整個陣列大小（5 × 4 = 20 bytes）</span>
-    printf(<span class="string">"In the main, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>,
-           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
-    
-    <span class="comment">// 計算陣列元素個數</span>
-    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
-    
-    <span class="comment">// 將陣列首位址 &A[0] 和大小 size 傳入函式</span>
-    printf(<span class="string">"Total of A is %d\n"</span>, sum(&A[<span class="number">0</span>], size));
-    
-    <span class="keyword">return</span> <span class="number">0</span>;
-}
-</pre></div>
-          </div>
-        </section>
-
-        <!-- 4. Call Array by Address 詳解 -->
-        <section class="content-section" id="call-by-address">
-          <div class="section-header"><div class="section-number">📍</div><h2 class="section-title">Call Array by Address 詳解</h2></div>
-          <p class="content-text">當我們將陣列傳遞給函式時，實際上是傳遞陣列第一個元素的位址。</p>
-          
-          <div class="highlight-box">
-            <div class="highlight-title">🔍 重點筆記</div>
-            <ul class="bullet-list">
-              <li><code>int *A</code> 在函式參數中等同於 <code>int A[]</code>，陣列在傳遞時會退化為指標</li>
-              <li><code>pow(x, 2)</code> 回傳 <code>double</code>，但在這裡會被自動轉型成 <code>int</code> 存回陣列</li>
-              <li><code>&A[0]</code> 取得陣列第一個元素的位址，用來傳遞給指標參數</li>
-              <li><code>sizeof(A) / sizeof(A[0])</code> 用於計算陣列長度，避免死亡陣列大小</li>
-            </ul>
-          </div>
-
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">完整可執行：call_by_address_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-3')">📋 複製</button></div>
-            <div class="code-block" id="code-3"><pre><span class="comment">// call by address</span>
-<span class="keyword">#include</span> &lt;stdio.h&gt;
-<span class="keyword">#include</span> &lt;math.h&gt;
-
-<span class="comment">// 函式：將陣列中每個元素平方</span>
-<span class="type">void</span> <span class="function">square</span>(<span class="type">int</span>* A, <span class="type">int</span> size) {
-    printf(<span class="string">"函式內 sizeof(A) = %zu bytes (指標大小)\n"</span>, <span class="keyword">sizeof</span>(A));
-    
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
-        <span class="comment">// pow(A[i], 2) 回傳 double，但會自動轉型成 int</span>
-        A[i] = (<span class="type">int</span>)pow(A[i], <span class="number">2</span>);
-        printf(<span class="string">"A[%d] = %d\n"</span>, i, A[i]);
-    }
-}
-
-<span class="type">void</span> <span class="function">print_array</span>(<span class="type">int</span>* arr, <span class="type">int</span> size) {
-    printf(<span class="string">"陣列內容: ["</span>);
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
-        printf(<span class="string">"%d"</span>, arr[i]);
-        <span class="keyword">if</span> (i &lt; size - <span class="number">1</span>) printf(<span class="string">", "</span>);
-    }
-    printf(<span class="string">"]\n"</span>);
-}
-
-<span class="type">int</span> <span class="function">main</span>() {
-    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
-    
-    printf(<span class="string">"main 函式內 sizeof(A) = %zu bytes (整個陣列)\n"</span>, <span class="keyword">sizeof</span>(A));
-    
-    <span class="comment">// 計算陣列大小</span>
-    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]);
-    printf(<span class="string">"陣列長度: %d\n\n"</span>, size);
-    
-    printf(<span class="string">"原始陣列:\n"</span>);
-    print_array(A, size);
-    
-    printf(<span class="string">"\n呼叫 square 函式 (傳址呼叫):\n"</span>);
-    square(&A[<span class="number">0</span>], size);  <span class="comment">// 等價於 square(A, size)</span>
-    
-    printf(<span class="string">"\n修改後陣列:\n"</span>);
-    print_array(A, size);
-    
-    <span class="keyword">return</span> <span class="number">0</span>;
-}
-</pre></div>
-          </div>
-        </section>
-
-        <!-- 5. 不同的陣列參數寫法 -->
-        <section class="content-section" id="parameter-styles">
-          <div class="section-header"><div class="section-number">🔄</div><h2 class="section-title">不同的陣列參數寫法</h2></div>
-          <p class="content-text">在 C 語言中，以下三種陣列參數寫法是完全等價的：</p>
-          
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">等價的陣列參數寫法</span><button class="copy-btn" onclick="copyCode(this,'code-4')">📋 複製</button></div>
-            <div class="code-block" id="code-4"><pre><span class="comment">// 以下三種寫法完全等價</span>
-
-<span class="comment">// 寫法 1: 指標表示法</span>
-<span class="type">int</span> <span class="function">sum1</span>(<span class="type">int</span>* A, <span class="type">int</span> size) {
-    <span class="comment">// 實作...</span>
-}
-
-<span class="comment">// 寫法 2: 陣列表示法（無大小）</span>
-<span class="type">int</span> <span class="function">sum2</span>(<span class="type">int</span> A[], <span class="type">int</span> size) {
-    <span class="comment">// 實作...</span>
-}
-
-<span class="comment">// 寫法 3: 陣列表示法（有大小，但會被忽略）</span>
-<span class="type">int</span> <span class="function">sum3</span>(<span class="type">int</span> A[<span class="number">10</span>], <span class="type">int</span> size) {
-    <span class="comment">// 實作... (10 這個數字會被編譯器忽略)</span>
-}
-
-<span class="comment">// 呼叫時都一樣</span>
-<span class="type">int</span> <span class="function">main</span>() {
-    <span class="type">int</span> arr[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
-    <span class="type">int</span> size = <span class="keyword">sizeof</span>(arr) / <span class="keyword">sizeof</span>(arr[<span class="number">0</span>]);
-    
-    sum1(arr, size);  <span class="comment">// 等價於 sum1(&arr[0], size)</span>
-    sum2(arr, size);
-    sum3(arr, size);
-    
-    <span class="keyword">return</span> <span class="number">0</span>;
-}
-</pre></div>
-          </div>
-        </section>
-
-        <!-- 6. 實際應用範例 -->
-        <section class="content-section" id="practical-example">
-          <div class="section-header"><div class="section-number">💡</div><h2 class="section-title">實際應用範例</h2></div>
-          <p class="content-text">一個完整的陣列處理程式，包含多種常見操作：</p>
-          
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">完整可執行：array_operations_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-5')">📋 複製</button></div>
-            <div class="code-block" id="code-5"><pre><span class="keyword">#include</span> &lt;stdio.h&gt;
-
-<span class="comment">// 印出陣列</span>
-<span class="type">void</span> <span class="function">print_array</span>(<span class="type">int</span>* arr, <span class="type">int</span> size) {
-    printf(<span class="string">"["</span>);
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
-        printf(<span class="string">"%d"</span>, arr[i]);
-        <span class="keyword">if</span> (i &lt; size - <span class="number">1</span>) printf(<span class="string">", "</span>);
-    }
-    printf(<span class="string">"]\n"</span>);
-}
-
-<span class="comment">// 計算陣列總和</span>
-<span class="type">int</span> <span class="function">array_sum</span>(<span class="type">int</span>* arr, <span class="type">int</span> size) {
-    <span class="type">int</span> total = <span class="number">0</span>;
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
-        total += arr[i];
-    }
-    <span class="keyword">return</span> total;
-}
-
-<span class="comment">// 尋找最大值</span>
-<span class="type">int</span> <span class="function">find_max</span>(<span class="type">int</span>* arr, <span class="type">int</span> size) {
-    <span class="type">int</span> max = arr[<span class="number">0</span>];
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; size; i++) {
-        <span class="keyword">if</span> (arr[i] > max) {
-            max = arr[i];
-        }
-    }
-    <span class="keyword">return</span> max;
-}
-
-<span class="comment">// 將陣列所有元素乘以常數</span>
-<span class="type">void</span> <span class="function">multiply_by</span>(<span class="type">int</span>* arr, <span class="type">int</span> size, <span class="type">int</span> factor) {
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
-        arr[i] *= factor;
-    }
-}
-
-<span class="type">int</span> <span class="function">main</span>() {
-    <span class="type">int</span> numbers[] = {<span class="number">3</span>, <span class="number">7</span>, <span class="number">1</span>, <span class="number">9</span>, <span class="number">4</span>, <span class="number">2</span>};
-    <span class="type">int</span> size = <span class="keyword">sizeof</span>(numbers) / <span class="keyword">sizeof</span>(numbers[<span class="number">0</span>]);
-    
-    printf(<span class="string">"原始陣列: "</span>);
-    print_array(numbers, size);
-    
-    printf(<span class="string">"陣列大小: %d 個元素\n"</span>, size);
-    printf(<span class="string">"陣列總和: %d\n"</span>, array_sum(numbers, size));
-    printf(<span class="string">"最大值: %d\n\n"</span>, find_max(numbers, size));
-    
-    printf(<span class="string">"將每個元素乘以 3:\n"</span>);
-    multiply_by(numbers, size, <span class="number">3</span>);
-    print_array(numbers, size);
-    
-    printf(<span class="string">"新的總和: %d\n"</span>, array_sum(numbers, size));
-    printf(<span class="string">"新的最大值: %d\n"</span>, find_max(numbers, size));
-    
-    <span class="keyword">return</span> <span class="number">0</span>;
-}
-</pre></div>
-          </div>
-        </section>
-
-        <!-- 7. 執行結果比較 -->
-        <section class="content-section" id="execution-comparison">
-          <div class="section-header"><div class="section-number">📊</div><h2 class="section-title">執行結果比較</h2></div>
-          <p class="content-text">讓我們比較錯誤版本和正確版本的執行結果：</p>
-          
-          <div class="memory-diagram">
-            <h4 style="color:var(--text-primary);margin-bottom:15px;">錯誤版本輸出結果：</h4>
-            <div style="background:var(--code-bg);color:var(--code-text);padding:15px;border-radius:8px;font-family:monospace;text-align:left;margin-bottom:20px;">
-              <pre>In the main, size of A: 20 bytes. Size of A[0]: 4 bytes
-In the function, size of A: 8 bytes. Size of A[0]: 4 bytes
-Total of A is 3  ← 錯誤！只計算了前兩個元素 (1+2)</pre>
-            </div>
-            
-            <h4 style="color:var(--text-primary);margin-bottom:15px;">正確版本輸出結果：</h4>
-            <div style="background:var(--code-bg);color:var(--code-text);padding:15px;border-radius:8px;font-family:monospace;text-align:left;">
-              <pre>In the main, size of A: 20 bytes. Size of A[0]: 4 bytes
-In the function, size of A: 8 bytes. Size of A[0]: 4 bytes
-Total of A is 15  ← 正確！計算了所有元素 (1+2+3+4+5)</pre>
-            </div>
-          </div>
-        </section>
-
-        <!-- 8. 記憶體布局圖解 -->
-        <section class="content-section" id="memory-layout">
-          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">記憶體布局圖解</h2></div>
-          <p class="content-text">理解陣列在記憶體中的實際配置和函式呼叫時的參數傳遞：</p>
-          
-          <div class="memory-diagram">
-            <div style="text-align:left;max-width:600px;margin:0 auto;">
-              <h4 style="color:var(--accent-primary);margin-bottom:10px;">main() 函式中：</h4>
-              <table class="memory-table" style="margin-bottom:20px;">
-                <tr>
-                  <th>變數</th>
-                  <th>位址</th>
-                  <th>值</th>
-                  <th>sizeof 結果</th>
-                </tr>
-                <tr>
-                  <td>A[0]</td>
-                  <td>0x1000</td>
-                  <td>1</td>
-                  <td rowspan="5">sizeof(A) = 20 bytes<br/>(整個陣列)</td>
-                </tr>
-                <tr>
-                  <td>A[1]</td>
-                  <td>0x1004</td>
-                  <td>2</td>
-                </tr>
-                <tr>
-                  <td>A[2]</td>
-                  <td>0x1008</td>
-                  <td>3</td>
-                </tr>
-                <tr>
-                  <td>A[3]</td>
-                  <td>0x100C</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>A[4]</td>
-                  <td>0x1010</td>
-                  <td>5</td>
-                </tr>
-              </table>
-              
-              <h4 style="color:var(--accent-primary);margin-bottom:10px;">sum() 函式中：</h4>
-              <table class="memory-table">
-                <tr>
-                  <th>參數</th>
-                  <th>型別</th>
-                  <th>值</th>
-                  <th>sizeof 結果</th>
-                </tr>
-                <tr>
-                  <td>A</td>
-                  <td>int*</td>
-                  <td>0x1000</td>
-                  <td>sizeof(A) = 8 bytes<br/>(指標大小)</td>
-                </tr>
-                <tr>
-                  <td>size</td>
-                  <td>int</td>
-                  <td>5</td>
-                  <td>sizeof(size) = 4 bytes</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <!-- 9. 最佳實踐建議 -->
-        <section class="content-section" id="best-practices">
-          <div class="section-header"><div class="section-number">💎</div><h2 class="section-title">最佳實踐建議</h2></div>
-          
-          <div class="highlight-box">
-            <div class="highlight-title">✨ 程式設計最佳實踐</div>
-            <ul class="bullet-list">
-              <li><strong>永遠傳遞陣列大小</strong>：將陣列作為參數時，總是同時傳遞陣列大小</li>
-              <li><strong>使用 const 保護</strong>：如果函式不需要修改陣列，使用 <code>const int* arr</code></li>
-              <li><strong>邊界檢查</strong>：在迴圈中確保不會超出陣列邊界</li>
-              <li><strong>命名清楚</strong>：使用清楚的參數名稱，如 <code>arr_size</code> 或 <code>length</code></li>
-            </ul>
-          </div>
-
-          <div class="code-container">
-            <div class="code-header"><span class="code-label">最佳實踐範例</span><button class="copy-btn" onclick="copyCode(this,'code-6')">📋 複製</button></div>
-            <div class="code-block" id="code-6"><pre><span class="comment">// 最佳實踐：清楚的函式設計</span>
-
-<span class="comment">// 唯讀函式：使用 const 保護陣列不被修改</span>
-<span class="type">int</span> <span class="function">calculate_average</span>(<span class="keyword">const</span> <span class="type">int</span>* numbers, <span class="type">int</span> count) {
-    <span class="keyword">if</span> (count &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;  <span class="comment">// 邊界檢查</span>
-    
-    <span class="type">int</span> sum = <span class="number">0</span>;
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; count; i++) {
-        sum += numbers[i];
-    }
-    <span class="keyword">return</span> sum / count;
-}
-
-<span class="comment">// 修改函式：清楚表明會修改陣列</span>
-<span class="type">void</span> <span class="function">normalize_array</span>(<span class="type">int</span>* values, <span class="type">int</span> length, <span class="type">int</span> max_value) {
-    <span class="keyword">if</span> (length &lt;= <span class="number">0</span> || max_value &lt;= <span class="number">0</span>) <span class="keyword">return</span>;  <span class="comment">// 參數驗證</span>
-    
-    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; length; i++) {
-        <span class="keyword">if</span> (values[i] > max_value) {
-            values[i] = max_value;  <span class="comment">// 限制最大值</span>
-        }
-    }
-}
-
-<span class="comment">// 使用宏定義簡化陣列大小計算</span>
-<span class="keyword">#define</span> ARRAY_SIZE(arr) (<span class="keyword">sizeof</span>(arr) / <span class="keyword">sizeof</span>((arr)[<span class="number">0</span>]))
-
-<span class="type">int</span> <span class="function">main</span>() {
-    <span class="type">int</span> data[] = {<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>};
-    <span class="type">int</span> size = ARRAY_SIZE(data);
-    
-    printf(<span class="string">"平均值: %d\n"</span>, calculate_average(data, size));
-    
-    normalize_array(data, size, <span class="number">35</span>);
-    printf(<span class="string">"正規化後平均值: %d\n"</span>, calculate_average(data, size));
-    
-    <span class="keyword">return</span> <span class="number">0</span>;
-}
-</pre></div>
-          </div>
-        </section>
-
-        <!-- 小節總結 -->
-        <section class="content-section">
-          <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">本章重點總結</h2></div>
-          <ul class="bullet-list">
-            <li><strong>陣列退化</strong>：陣列作為函式參數時會退化成指標，失去原始大小資訊</li>
-            <li><strong>sizeof 陷阱</strong>：在函式內對陣列參數使用 sizeof 只會得到指標大小，不是陣列大小</li>
-            <li><strong>正確做法</strong>：將陣列大小作為額外參數一起傳入函式</li>
-            <li><strong>參數等價性</strong>：<code>int *A</code>、<code>int A[]</code>、<code>int A[10]</code> 在函式參數中完全等價</li>
-            <li><strong>傳址特性</strong>：陣列傳遞本質上是傳址呼叫，函式內的修改會影響原陣列</li>
-            <li><strong>記憶體布局</strong>：理解陣列在記憶體中連續存放，函式只接收首元素位址</li>
-          </ul>
-          
-          <div class="error-box">
-            <div class="error-title">⚠️ 重要提醒</div>
-            <p>記住：在 main() 函式中 <code>sizeof(array)</code> 可以正確計算陣列大小，但在其他函式中的陣列參數只能得到指標大小。這是 C 語言的重要特性，務必牢記！</p>
-          </div>
-          
-          <div class="highlight-box">
-            <div class="highlight-title">🎯 核心概念</div>
-            <p>陣列作為函式參數的核心概念是「陣列退化為指標」。這個特性讓陣列傳遞變得高效（只傳遞位址），但也要求程式設計師額外管理陣列大小資訊。掌握這個概念是理解 C 語言函式設計的關鍵。</p>
-          </div>
-        </section>
-      </main>
-
-      <nav class="navigation">
-        <a href="chapter6.html" class="nav-btn prev"><div><div class="nav-direction">← 上一頁</div><div class="nav-title">Pointers and Arrays</div></div></a>
-        <div class="nav-center"><div style="font-weight:600;">Chapter 7 / 18</div><div style="font-size:.9em;">Array as Function Argument</div></div>
-        <a href="chapter8.html" class="nav-btn"><div><div class="nav-direction">下一頁 →</div><div class="nav-title">Character Arrays and Pointers - part 1</div></div></a>
-      </nav>
-    </div>
-  </div>
-
-  <script>
-    function toggleTheme(){const body=document.body,themeIcon=document.getElementById('theme-icon');const cur=body.getAttribute('data-theme');if(cur==='dark'){body.setAttribute('data-theme','light');themeIcon.textContent='🌙';localStorage.setItem('theme','light');}else{body.setAttribute('data-theme','dark');themeIcon.textContent='☀️';localStorage.setItem('theme','dark');}}
-    function loadTheme(){const saved=localStorage.getItem('theme')||'light';const themeIcon=document.getElementById('theme-icon');document.body.setAttribute('data-theme',saved);themeIcon.textContent=saved==='dark'?'☀️':'🌙';}
-    function toggleSubMenu(element){event.preventDefault();const arrow=element.querySelector('.arrow');const subMenu=element.parentElement.querySelector('.sub-menu');if(subMenu){arrow.classList.toggle('expanded');subMenu.classList.toggle('show');}}
-    function copyCode(btn,id){const code=document.getElementById(id).querySelector('pre').textContent;navigator.clipboard.writeText(code).then(()=>{const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)}).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)})}
-    document.addEventListener('DOMContentLoaded',()=>loadTheme());
-  </script>
-</body>
-</html>sum</span>(<span class="type">int</span> A[]) {
+<span class="type">int</span> <span class="function">sum</span>(<span class="type">int</span> A[]) {
     <span class="type">int</span> sum = <span class="number">0</span>;
     
     <span class="comment">// ⚠️ sizeof(A) 這裡的 A 是「指標」，不是完整陣列</span>
@@ -714,4 +340,189 @@ Total of A is 15  ← 正確！計算了所有元素 (1+2+3+4+5)</pre>
     <span class="keyword">return</span> sum;
 }
 
-<span class="type">int</span> <span class="function">
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+    
+    <span class="comment">// 在 main() 中，A 是陣列，因此 sizeof(A) 會計算整個陣列大小（5 × 4 = 20 bytes）</span>
+    printf(<span class="string">"In the main, size of A: %zu bytes. Size of A[0]: %zu bytes\n"</span>,
+           <span class="keyword">sizeof</span>(A), <span class="keyword">sizeof</span>(A[<span class="number">0</span>]));
+    
+    <span class="comment">// 計算陣列元素個數</span>
+    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
+    
+    <span class="comment">// 將陣列首位址 &A[0] 和大小 size 傳入函式</span>
+    printf(<span class="string">"Total of A is %d\n"</span>, sum(&A[<span class="number">0</span>], size));
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre></div>
+          </div>
+        </section>
+
+        <!-- 4. Call Array by Address 詳解 -->
+        <section class="content-section" id="call-by-address">
+          <div class="section-header"><div class="section-number">📍</div><h2 class="section-title">Call Array by Address 詳解</h2></div>
+          <p class="content-text">當我們將陣列傳遞給函式時，實際上是傳遞陣列第一個元素的位址。</p>
+          
+          <div class="highlight-box">
+            <div class="highlight-title">🔍 重點筆記</div>
+            <ul class="bullet-list">
+              <li><code>int *A</code> 在函式參數中等同於 <code>int A[]</code>，陣列在傳遞時會退化為指標</li>
+              <li><code>pow(x, 2)</code> 回傳 <code>double</code>，但在這裡會被自動轉型成 <code>int</code> 存回陣列</li>
+              <li><code>&A[0]</code> 取得陣列第一個元素的位址，用來傳遞給指標參數</li>
+              <li><code>sizeof(A) / sizeof(A[0])</code> 用於計算陣列長度，避免死亡陣列大小</li>
+            </ul>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header"><span class="code-label">完整可執行：call_by_address_demo.c</span><button class="copy-btn" onclick="copyCode(this,'code-3')">📋 複製</button></div>
+            <div class="code-block" id="code-3"><pre><span class="comment">// call by address</span>
+<span class="keyword">#include</span> &lt;stdio.h&gt;
+<span class="keyword">#include</span> &lt;math.h&gt;
+
+<span class="comment">// 函式：將陣列中每個元素平方</span>
+<span class="type">void</span> <span class="function">twotimes</span>(<span class="type">int</span>* A, <span class="type">int</span> size) {
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        <span class="comment">// pow(A[i], 2) 回傳 double，但會自動轉型成 int</span>
+        *(A + i) = (<span class="type">int</span>)pow(*(A + i), <span class="number">2</span>);
+    }
+}
+
+<span class="type">void</span> <span class="function">show</span>(<span class="type">int</span> *p, <span class="type">int</span> size) {
+    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; size; i++) {
+        <span class="comment">// *(p+i) 等價於 p[i]，透過指標位移存取陣列元素</span>
+        printf(<span class="string">"%d\t"</span>, *(p + i));
+    }
+    printf(<span class="string">"\n"</span>);
+}
+
+<span class="type">int</span> <span class="function">main</span>() {
+    <span class="type">int</span> A[] = {<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>};
+    
+    <span class="comment">// 計算陣列元素個數</span>
+    <span class="type">int</span> size = <span class="keyword">sizeof</span>(A) / <span class="keyword">sizeof</span>(A[<span class="number">0</span>]); 
+    
+    printf(<span class="string">"原始陣列: "</span>);
+    show(&A[<span class="number">0</span>], size);
+    
+    <span class="comment">// 將每個元素平方</span>
+    twotimes(&A[<span class="number">0</span>], size);
+    
+    printf(<span class="string">"平方後陣列: "</span>);
+    show(&A[<span class="number">0</span>], size);
+    
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre></div>
+          </div>
+        </section>
+
+        <!-- 5. 記憶體布局圖解 -->
+        <section class="content-section" id="memory-layout">
+          <div class="section-header"><div class="section-number">🧠</div><h2 class="section-title">記憶體布局圖解</h2></div>
+          <p class="content-text">理解陣列在記憶體中的實際配置和函式呼叫時的參數傳遞：</p>
+          
+          <div class="memory-diagram">
+            <div style="text-align:left;max-width:600px;margin:0 auto;">
+              <h4 style="color:var(--accent-primary);margin-bottom:10px;">main() 函式中：</h4>
+              <table class="memory-table" style="margin-bottom:20px;">
+                <tr>
+                  <th>變數</th>
+                  <th>位址</th>
+                  <th>值</th>
+                  <th>sizeof 結果</th>
+                </tr>
+                <tr>
+                  <td>A[0]</td>
+                  <td>0x1000</td>
+                  <td>1</td>
+                  <td rowspan="5">sizeof(A) = 20 bytes<br/>(整個陣列)</td>
+                </tr>
+                <tr>
+                  <td>A[1]</td>
+                  <td>0x1004</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>A[2]</td>
+                  <td>0x1008</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>A[3]</td>
+                  <td>0x100C</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>A[4]</td>
+                  <td>0x1010</td>
+                  <td>5</td>
+                </tr>
+              </table>
+              
+              <h4 style="color:var(--accent-primary);margin-bottom:10px;">sum() 函式中：</h4>
+              <table class="memory-table">
+                <tr>
+                  <th>參數</th>
+                  <th>型別</th>
+                  <th>值</th>
+                  <th>sizeof 結果</th>
+                </tr>
+                <tr>
+                  <td>A</td>
+                  <td>int*</td>
+                  <td>0x1000</td>
+                  <td>sizeof(A) = 8 bytes<br/>(指標大小)</td>
+                </tr>
+                <tr>
+                  <td>size</td>
+                  <td>int</td>
+                  <td>5</td>
+                  <td>sizeof(size) = 4 bytes</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 小節總結 -->
+        <section class="content-section">
+          <div class="section-header"><div class="section-number">✅</div><h2 class="section-title">本章重點總結</h2></div>
+          <ul class="bullet-list">
+            <li><strong>陣列退化</strong>：陣列作為函式參數時會退化成指標，失去原始大小資訊</li>
+            <li><strong>sizeof 陷阱</strong>：在函式內對陣列參數使用 sizeof 只會得到指標大小，不是陣列大小</li>
+            <li><strong>正確做法</strong>：將陣列大小作為額外參數一起傳入函式</li>
+            <li><strong>參數等價性</strong>：<code>int *A</code>、<code>int A[]</code>、<code>int A[10]</code> 在函式參數中完全等價</li>
+            <li><strong>傳址特性</strong>：陣列傳遞本質上是傳址呼叫，函式內的修改會影響原陣列</li>
+            <li><strong>記憶體布局</strong>：理解陣列在記憶體中連續存放，函式只接收首元素位址</li>
+          </ul>
+          
+          <div class="error-box">
+            <div class="error-title">⚠️ 重要提醒</div>
+            <p>記住：在 main() 函式中 <code>sizeof(array)</code> 可以正確計算陣列大小，但在其他函式中的陣列參數只能得到指標大小。這是 C 語言的重要特性，務必牢記！</p>
+          </div>
+          
+          <div class="highlight-box">
+            <div class="highlight-title">🎯 核心概念</div>
+            <p>陣列作為函式參數的核心概念是「陣列退化為指標」。這個特性讓陣列傳遞變得高效（只傳遞位址），但也要求程式設計師額外管理陣列大小資訊。掌握這個概念是理解 C 語言函式設計的關鍵。</p>
+          </div>
+        </section>
+      </main>
+
+      <nav class="navigation">
+        <a href="chapter6.html" class="nav-btn prev"><div><div class="nav-direction">← 上一頁</div><div class="nav-title">Pointers and Arrays</div></div></a>
+        <div class="nav-center"><div style="font-weight:600;">Chapter 7 / 18</div><div style="font-size:.9em;">Array as Function Argument</div></div>
+        <a href="chapter8.html" class="nav-btn"><div><div class="nav-direction">下一頁 →</div><div class="nav-title">Character Arrays and Pointers - part 1</div></div></a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme(){const body=document.body,themeIcon=document.getElementById('theme-icon');const cur=body.getAttribute('data-theme');if(cur==='dark'){body.setAttribute('data-theme','light');themeIcon.textContent='🌙';localStorage.setItem('theme','light');}else{body.setAttribute('data-theme','dark');themeIcon.textContent='☀️';localStorage.setItem('theme','dark');}}
+    function loadTheme(){const saved=localStorage.getItem('theme')||'light';const themeIcon=document.getElementById('theme-icon');document.body.setAttribute('data-theme',saved);themeIcon.textContent=saved==='dark'?'☀️':'🌙';}
+    function toggleSubMenu(element){event.preventDefault();const arrow=element.querySelector('.arrow');const subMenu=element.parentElement.querySelector('.sub-menu');if(subMenu){arrow.classList.toggle('expanded');subMenu.classList.toggle('show');}}
+    function copyCode(btn,id){const code=document.getElementById(id).querySelector('pre').textContent;navigator.clipboard.writeText(code).then(()=>{const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)}).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);const t=btn.textContent;btn.textContent='✅ 已複製';btn.classList.add('copied');setTimeout(()=>{btn.textContent=t;btn.classList.remove('copied')},2000)})}
+    document.addEventListener('DOMContentLoaded',()=>loadTheme());
+  </script>
+</body>
+</html>
